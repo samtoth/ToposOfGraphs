@@ -29,6 +29,8 @@ ap f refl = refl
 record Unit {ℓ} : Grph ℓ where
   constructor <>
 
+data ∅ {ℓ} : Grph ℓ where
+
 infix 10 _⊢_
 infix 10 _⊩_
 _⊢_ = Partial
@@ -60,8 +62,7 @@ postulate
   ⊢-ext : ∀ {ℓ} {ϕ} {A : Grph ℓ} {p0 p1 : ϕ ⊢ A} → (z ∶ ϕ ⊩ (p0 z ≡ p1 z)) → mk-wrap p0 ≡ mk-wrap p1
   ⊩-ext : ∀ {ℓ} {ϕ} {A : ϕ ⊢ Grph ℓ} {p0 p1 : ϕ ⊩ A} → (z ∶ ϕ ⊩ _≡_ {A = A z} (p0 z) (p1 z)) → mk-wrap p0 ≡ mk-wrap p1
 
-
-record iso {ℓ ℓ'} (A : Grph ℓ) (B : Grph ℓ') : Grph (ℓ ⊔ ℓ') where
+record iso {ℓ} (A : Grph ℓ) (B : Grph ℓ) : Grph ℓ where
   constructor mk-iso
   field
     fwd : A → B
@@ -77,6 +78,9 @@ open iso public
 isom : ∀ {ℓ} (B : Grph ℓ) → Grph (lsuc ℓ)
 isom {ℓ} B = Σ (Grph ℓ) λ A → iso A B
 
+
+postulate
+  funext : ∀ {ℓ ℓ'} {A : Grph ℓ} {B : Grph ℓ'} → (f g : A → B) → (∀ x → f x ≡ g x) → f ≡ g 
 
 infix 2 Σ-syntax
 
@@ -139,8 +143,10 @@ A ≃ B = Σ (A → B) is-equiv
 --   test p = trans (sym (f .bwd-fwd _)) (ap (bwd f) p)
 
 is-surjective : ∀ {ℓ ℓ'} {A : Grph ℓ} {B : Grph ℓ'} → (A → B) → Grph _
-is-surjective f = ∀ {x} → ∥ fibre f x ∥
+is-surjective f = ∀ x → ∥ fibre f x ∥
 
+is-embedding : ∀ {ℓ ℓ'} {A : Grph ℓ} {B : Grph ℓ'} → (A → B) → Grph _
+is-embedding f = ∀ x → is-prop (fibre f x)
 
 Grph\ : (ϕ : ℙ) (ℓ : Level) → _
 Grph\ ϕ ℓ = Grph ℓ [ _ ∶ ϕ ⊢ Unit ]

@@ -37,4 +37,7 @@ module Closed (φ : ℙ) where
   ●-modal : Set ℓ → Set ℓ
   ●-modal A = A ≅ ● A
 
-  
+  ●-app : ∀ {A B : Grph ℓ} → ● (A → B) → ● A → ● B
+  ●-app f = ⌈ *-ind _ (λ p x → *-inl p)
+         (λ f → ⌊ (λ x → ⌈ *-ind _ (λ p → *-inl p)
+         (λ a → ⌊ *-inr (f a) ⌋) x ⌉) ⌋) f ⌉ 

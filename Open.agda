@@ -29,3 +29,6 @@ module Open (φ : ℙ) where
 
   ○-modal : Set ℓ → Set ℓ
   ○-modal A = A ≅ ○ A
+
+  ○-app : ∀ {A B : Grph ℓ} → ○ (A → B) → ○ A → ○ B
+  ○-app (mk-wrap f) (mk-wrap x) = mk-wrap λ p → f p (x p)

@@ -38,15 +38,18 @@ postulate
 --   edges of (v → P) := Grph(h(E) × h(V), P) ≅ Grph(∙ ∙, P)
 -- that is ○ P is the complete graph on the nodes of P
 
--- Then a graph is compete when the map G → ○ G is surjective
+-- Then a graph is complete when ○-η is onto
 Complete : Grph ℓ → Grph ℓ
 Complete G = is-surjective (○-η {_} {G})
 
 -- The closed modality is the pushout 𝓋 ← (𝓋 × G) → G
 --    this is called the join 𝓋 * G
---    Hom((𝓋 * G) , h(x))  ≅ Hom(colim(𝓋 ← 𝓋 × G → G), h(x))
---  ≅ colim(Hom(𝓋 ← 𝓋 × G → G, h(x))
-
+--      Span := B ← A → C
+--      F : Span → Psh(G)
+--      F(B ← A → C) := 𝓋 ← 𝓋 × G → G
+--    Hom(h(x), (𝓋 * G))  ≅ Hom(h(x), colim_y(F(y)))
+--  ≅ colim_y(Hom(h(x), F(y))) ≅ colim_y(F(y)(x))
+-- (𝓋 * G)(V) ≅ colim_y(F(y)(V)) ≅ colim(𝟙 ← G(V) → G(V))
 
 -- A graph is single (has one point) when it is ●-modal
 Single : Grph ℓ → Grph ℓ
@@ -87,10 +90,49 @@ Parts G = Σ[ O ∈ ○ G ] Σ[ C ∈ ● G ] (●-η O ≡ ●-map ○-η C)
  
 
 Parts-make-whole : ∀ {G : Grph ℓ} → Parts G ≅ G
-fwd Parts-make-whole (mk-wrap o , c , p ) = ⌈ *-ind (λ _ → _) o (λ g → {! o ⋆  !}) c ⌉
+fwd Parts-make-whole (mk-wrap o , c , p ) = ⌈ *-ind (λ _ → _) o (λ g → {!   !}) c ⌉
 bwd Parts-make-whole g = ○-η g , ●-η g , refl
 fwd-bwd Parts-make-whole = {!   !}
 bwd-fwd Parts-make-whole = {!   !}
 
 
- 
+postulate
+  V-single : Single V
+-- fwd V-single = ●-η
+-- bwd V-single v = {!   !}
+-- fwd-bwd V-single = {!   !}
+-- bwd-fwd V-single = {!   !}
+
+is-contr-○V : ○ V ≅ Unit
+fwd is-contr-○V p = <>
+bwd is-contr-○V p = mk-wrap (λ {p → {!   !}})
+fwd-bwd is-contr-○V = {!   !}
+bwd-fwd is-contr-○V = {!   !}
+
+
+-- Bool is the graph: tt  ff
+--  with two self loops
+
+data Bool : Grph where
+  tt ff : Bool
+
+-- We posulate Arr to be the graph with
+-- two points and one Arrow
+--  the 'walking arrow graph'
+postulate
+  Arr : Grph
+  Arr-cl : ● Arr ≅ Unit
+  Arr-op : ○ Arr ≅ ○ Bool
+
+-- the arrows in G are the global
+-- points of Arrs G. 
+Arrs : Grph ℓ → Grph ℓ
+Arrs G = Arr → G 
+
+-- as a sanity check, the arrows of 
+-- V should be V. (the global points of V are empty)
+ArrV : Arrs V ≅ V
+fwd ArrV arr = V-single .bwd (●-app (●-η arr) (Arr-cl .bwd <>))
+bwd ArrV = λ x _ → x
+fwd-bwd ArrV (mk-wrap (𝓋 = ⊤)) = refl
+bwd-fwd ArrV arrV = funext _ _ (λ x → {!   !})
