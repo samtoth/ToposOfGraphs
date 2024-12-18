@@ -29,7 +29,11 @@ ap f refl = refl
 record Unit {ℓ} : Grph ℓ where
   constructor <>
 
-data ∅ {ℓ} : Grph ℓ where
+data ∅ : Grph where
+
+data _+_ {ℓ ℓ'} (A : Grph ℓ) (B : Grph ℓ') : Grph (ℓ ⊔ ℓ') where
+  left : A → A + B
+  right : B → A + B
 
 infix 10 _⊢_
 infix 10 _⊩_
